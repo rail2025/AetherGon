@@ -2,70 +2,40 @@ using Dalamud.Configuration;
 using Dalamud.Plugin;
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 
 namespace AetherGon;
 
 [Serializable]
-public class SavedGame
-{
-    public int Score { get; set; }
-    public int CurrentStage { get; set; }
-    public List<SerializableBubble> Bubbles { get; set; } = new();
-    public SerializableBubble? NextBubble { get; set; }
-    public int ShotsUntilDrop { get; set; }
-    public float TimeUntilDrop { get; set; }
-    public bool IsHelperLineActiveForStage { get; set; }
-}
-
-[Serializable]
-public class SerializableBubble
-{
-    public Vector2 Position { get; set; }
-    public int BubbleType { get; set; }
-}
-
-[Serializable]
 public class Configuration : IPluginConfiguration
 {
-    public int Version { get; set; } = 1;
+    public int Version { get; set; } = 0;
 
-    // General Settings
-    public bool IsGameWindowLocked { get; set; } = true;
-    public bool EnableDebug { get; set; } = false;
+    // --- New Architecture Settings ---
+    public bool ShowGuideLines { get; set; } = true;
+    public float HighScore { get; set; } = 0f;
 
-    // High Score
-    public int HighScore { get; set; } = 0;
-
-    // Audio Settings
-    public bool IsBgmMuted { get; set; } = false;
     public bool IsSfxMuted { get; set; } = false;
+    public bool IsBgmMuted { get; set; } = false;
     public float MusicVolume { get; set; } = 0.5f;
+    public List<int> UnlockedBonusTracks { get; set; } = new();
 
-    // --- Start of Changes ---
-    // A set to store the integer IDs of unlocked bonus music tracks.
-    public HashSet<int> UnlockedBonusTracks { get; set; } = new();
-    // --- End of Changes ---
+    public bool IsGameWindowLocked { get; set; } = false;
 
-    // Saved Game State
-    public SavedGame? SavedGame { get; set; }
-
-    // Advanced Triggers
-    public bool OpenOnDeath { get; set; } = true;
+    public bool OpenOnDeath { get; set; } = false;
     public bool OpenInQueue { get; set; } = false;
-    public bool OpenDuringCrafting { get; set; } = false;
     public bool OpenInPartyFinder { get; set; } = false;
+    public bool OpenDuringCrafting { get; set; } = false;
 
     [NonSerialized]
-    private IDalamudPluginInterface? pluginInterface;
+    private IDalamudPluginInterface? PluginInterface;
 
-    public void Initialize(IDalamudPluginInterface p)
+    public void Initialize(IDalamudPluginInterface pluginInterface)
     {
-        this.pluginInterface = p;
+        this.PluginInterface = pluginInterface;
     }
 
     public void Save()
     {
-        this.pluginInterface?.SavePluginConfig(this);
+        this.PluginInterface!.SavePluginConfig(this);
     }
 }

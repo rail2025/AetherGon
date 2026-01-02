@@ -127,8 +127,9 @@ public class AudioManager : IDisposable
         {
             this.bgmPlaylist.Add(trackName);
             // Add the track number to the configuration and save it
-            if (this.configuration.UnlockedBonusTracks.Add(trackNumber))
+            if (!this.configuration.UnlockedBonusTracks.Contains(trackNumber))
             {
+                this.configuration.UnlockedBonusTracks.Add(trackNumber); 
                 this.configuration.Save();
             }
         }

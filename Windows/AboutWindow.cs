@@ -42,7 +42,7 @@ public class AboutWindow : Window, IDisposable
         ImGui.Text("Created by: rail");
         ImGui.Text("With special thanks to the Dalamud Discord community.");
         ImGui.Text("Check out my other projects on github.com/rail2025/");
-        ImGui.Text("AetherDraw and WDIGViewer.");
+        ImGui.Text("AetherDraw,WDIGViewer, AetherBreaker, AetherBreakout, Aetherpool, and more!");
         ImGui.Spacing();
         ImGui.Separator();
         ImGui.Spacing();

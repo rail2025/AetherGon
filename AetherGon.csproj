@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Dalamud.NET.Sdk/14.0.1">
   <PropertyGroup>
-    <Version>2.1.1.3</Version>
+    <Version>9.9.9.1</Version>
     <TargetFramework>net10.0</TargetFramework>
-    <Description>A game to play when dead. Open with /abreaker.</Description>
+    <Description>A super hexagon clone. Open with /agon.</Description>
     <PackageProjectUrl>https://github.com/goatcorp/SamplePlugin</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
@@ -13,8 +13,8 @@
     <EmbeddedResource Include="Images\background 2.png" />
     <EmbeddedResource Include="Images\background 3.png" />
     <EmbeddedResource Include="Images\background.png" />
-    <EmbeddedResource Include="Music\bgm1.mp3" />
-    <EmbeddedResource Include="Music\bgm2.mp3" />
+    <EmbeddedResource Include="Music\bgm11.mp3" />
+    <EmbeddedResource Include="Music\bgm22.mp3" />
     <EmbeddedResource Include="Music\bgm5Hotw.mp3" />
     <EmbeddedResource Include="Music\bgm4GQ.mp3" />
     <EmbeddedResource Include="Images\icon.png" />
@@ -27,7 +27,10 @@
     <EmbeddedResource Include="Images\mirror.png" />
     <EmbeddedResource Include="Images\paint.png" />
     <EmbeddedResource Include="Images\star.png" />
-    <Content Include="Music\bgm3.mp3" />
+    <EmbeddedResource Include="Music\bgm1.mp3" />
+    <EmbeddedResource Include="Music\bgm2.mp3" />
+    <EmbeddedResource Include="Music\bgm3.mp3" />
+    <Content Include="Music\bgm33.mp3" />
     <EmbeddedResource Include="Sfx\chest.wav" />
     <EmbeddedResource Include="Music\bgm6MR.mp3" />
     <EmbeddedResource Include="Music\bgm7Pfm.mp3" />
