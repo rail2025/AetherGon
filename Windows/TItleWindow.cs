@@ -33,10 +33,7 @@ public class TitleWindow : Window, IDisposable
     public void Dispose() { }
 
     public override void Draw()
-    {
-        // --- Background Image (Placeholder) ---
-        // Uncomment when you have an icon/bg loaded in TextureManager
-        
+    {            
         var bgTexture = _textureManager.GetIcon("Images.aethergontitle.png");
         if (bgTexture != null)
         {
@@ -48,15 +45,6 @@ public class TitleWindow : Window, IDisposable
 
         var windowWidth = ImGui.GetWindowWidth();
         var windowHeight = ImGui.GetWindowHeight();
-
-        // --- Title Text ---
-        // Center the title
-        /*string titleText = "AETHERGON";
-        ImGui.SetWindowFontScale(2.0f);
-        var titleSize = ImGui.CalcTextSize(titleText);
-        Vector2 titlePos = new Vector2((windowWidth - titleSize.X) * 0.5f, windowHeight * 0.2f);
-        DrawTextWithOutline(titleText, ImGui.GetWindowPos() + titlePos, 0xFFFFFFFF, 0xFF000000);
-        ImGui.SetWindowFontScale(1.0f);*/
 
         // --- Buttons ---
         float buttonWidth = 200f;
@@ -71,7 +59,7 @@ public class TitleWindow : Window, IDisposable
         if (DrawButtonWithOutline("StartGame", "ENTER THE HEXAGON", buttonSize))
         {
             this.IsOpen = false;
-            _plugin.ToggleMainUI(); // Opens the Game Window
+            _plugin.ToggleMainUI();
         }
 
         ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) * 0.5f, startY + buttonHeight + 10));
@@ -128,14 +116,12 @@ public class TitleWindow : Window, IDisposable
     {
         // Invisible button for interaction
         bool clicked = ImGui.Button($"##{id}", size);
-        if (clicked) _plugin.AudioManager.PlaySfx("advance.wav"); // Used existing SFX
+        if (clicked) _plugin.AudioManager.PlaySfx("advance.wav");
 
         // Manual Drawing
         var drawList = ImGui.GetWindowDrawList();
         var min = ImGui.GetItemRectMin();
         var max = ImGui.GetItemRectMax();
-
-        // Button Background (Semi-transparent black)
         drawList.AddRectFilled(min, max, 0x88000000, 5f);
 
         // Hover Effect
@@ -158,8 +144,6 @@ public class TitleWindow : Window, IDisposable
         if (clicked) _plugin.AudioManager.PlaySfx("advance.wav");
 
         ImGui.SameLine();
-
-        // Draw Label with outline manually to match style
         var pos = ImGui.GetCursorScreenPos();
         // Adjust Y to center with checkbox
         pos.Y -= 3f;
