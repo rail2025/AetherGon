@@ -68,7 +68,7 @@ public class RenderService : IDisposable
         _hasData = true;
     }
 
-    public void Draw()
+    public void Draw(Action onReturnToTitle = null)
     {
         if (!_hasData) return;
 
@@ -91,11 +91,12 @@ public class RenderService : IDisposable
         string controlsText = "Controls: A/D or \u2190 / \u2192 , Press SPACE or Enter to start"; // Left/Right Arrows
         var textSize = ImGui.CalcTextSize(controlsText);
         ImGui.SetCursorPos(new Vector2((windowSize.X - textSize.X) * 0.5f, windowSize.Y - textSize.Y - (20f * scale)));
+        
         ImGui.TextColored(new Vector4(1, 1, 1, 0.5f), controlsText);
 
         if (_currentStatus == GameStatus.Menu || _currentStatus == GameStatus.GameOver)
         {
-            DrawDifficultySelect(drawList, windowSize, scale);
+            DrawDifficultySelect(drawList, windowSize, scale, onReturnToTitle);
         }
 
         // UI: Timer & High Score (Top Right)
@@ -149,9 +150,18 @@ public class RenderService : IDisposable
         
     }
 
-    private void DrawDifficultySelect(ImDrawListPtr drawList, Vector2 windowSize, float scale)
+    private void DrawDifficultySelect(ImDrawListPtr drawList, Vector2 windowSize, float scale, Action onReturnToTitle)
     {
         Vector2 startPos = new Vector2(20 * scale, windowSize.Y - (100 * scale));
+
+        if (onReturnToTitle != null)
+        {
+            ImGui.SetCursorPos(new Vector2(startPos.X, startPos.Y - (35 * scale)));
+            if (ImGui.Button("Return to Title"))
+            {
+                onReturnToTitle.Invoke();
+            }
+        }
 
         DrawOutlinedText(drawList, ImGui.GetWindowPos() + startPos, "DIFFICULTY:", scale);
         ImGui.SetCursorPos(new Vector2(startPos.X, startPos.Y + (25 * scale)));

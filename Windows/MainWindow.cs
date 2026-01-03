@@ -42,7 +42,11 @@ public class MainWindow : Window, IDisposable
 
     public override void Draw()
     {
-        _renderService.Draw();
+        _renderService.Draw(() => {
+            this.IsOpen = false;
+            _plugin.TitleWindow.IsOpen = true;
+        });
+
         // Volume Slider Overlay
         var scale = ImGuiHelpers.GlobalScale;
         ImGui.SetCursorPos(new Vector2(20 * scale, 20 * scale));
