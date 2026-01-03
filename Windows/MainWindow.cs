@@ -45,6 +45,7 @@ public class MainWindow : Window, IDisposable
         _renderService.Draw();
 
         // Debug Overlay
+        /* 
         ImGui.SetCursorPos(new Vector2(10, 30));
 
         // Read directly from Dalamud KeyState for debug
@@ -61,5 +62,6 @@ public class MainWindow : Window, IDisposable
         {
             _eventBus.Publish(new GameActionCommand("Confirm"));
         }
+       */
     }
 }

@@ -40,7 +40,13 @@ public class TextureManager : IDisposable
     {
         return _bubbleTextures.TryGetValue(type, out var tex) ? tex : null;
     }
-
+    
+    public IDalamudTextureWrap? GetIcon(string name)
+    {
+        // Currently returns null or you can implement loading logic here later
+        // Example: return _textureProvider.GetIcon(name);
+        return null;
+    }
     public void Dispose()
     {
         foreach (var tex in _backgroundTextures) tex.Dispose();

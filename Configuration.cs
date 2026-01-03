@@ -19,7 +19,10 @@ public class Configuration : IPluginConfiguration
 
     // --- New Architecture Settings ---
     public bool ShowGuideLines { get; set; } = true;
-    public float HighScore { get; set; } = 0f;
+
+    // Changed: Store scores per difficulty
+    public Dictionary<Difficulty, float> HighScores { get; set; } = new();
+
     public Difficulty SelectedDifficulty { get; set; } = Difficulty.Hard;
 
     public bool IsSfxMuted { get; set; } = false;

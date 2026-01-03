@@ -10,6 +10,7 @@ using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using AetherGon.Windows;
 
 namespace AetherGon;
 
@@ -34,6 +35,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private readonly MainWindow _mainWindow;
     private readonly ConfigWindow _configWindow;
+    public readonly TitleWindow TitleWindow;
 
     public Plugin()
     {
@@ -66,9 +68,11 @@ public sealed class Plugin : IDalamudPlugin
 
         _mainWindow = new MainWindow(this);
         _configWindow = new ConfigWindow(this, AudioManager);
+        TitleWindow = new TitleWindow(this);
 
         WindowSystem.AddWindow(_mainWindow);
         WindowSystem.AddWindow(_configWindow);
+        WindowSystem.AddWindow(TitleWindow);
 
         CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
@@ -76,14 +80,14 @@ public sealed class Plugin : IDalamudPlugin
         });
 
         PluginInterface.UiBuilder.Draw += DrawUI;
-        PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
+        PluginInterface.UiBuilder.OpenMainUi += ToggleTitleUI;
         PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUI;
     }
 
     public void Dispose()
     {
         PluginInterface.UiBuilder.Draw -= DrawUI;
-        PluginInterface.UiBuilder.OpenMainUi -= ToggleMainUI;
+        PluginInterface.UiBuilder.OpenMainUi -= ToggleTitleUI;
         PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfigUI;
 
         CommandManager.RemoveHandler(CommandName);
@@ -92,12 +96,14 @@ public sealed class Plugin : IDalamudPlugin
 
         _mainWindow.Dispose();
         _configWindow.Dispose();
+        TitleWindow.Dispose();
         AudioManager.Dispose();
         Services.Dispose();
     }
 
-    private void OnCommand(string command, string args) => ToggleMainUI();
+    private void OnCommand(string command, string args) => ToggleTitleUI();
     private void DrawUI() => WindowSystem.Draw();
+    public void ToggleTitleUI() => TitleWindow.Toggle();
     public void ToggleMainUI() => _mainWindow.IsOpen = !_mainWindow.IsOpen;
     public void ToggleConfigUI() => _configWindow.Toggle();
 }

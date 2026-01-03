@@ -267,11 +267,16 @@ public class GameEngine : IDisposable
     {
         Plugin.Log.Info($"[GameEngine] Game Over! Time: {_survivalTime:0.00}s");
 
-        if (_survivalTime > _config.HighScore)
+        if (!_config.HighScores.ContainsKey(_config.SelectedDifficulty))
         {
-            _config.HighScore = _survivalTime;
+            _config.HighScores[_config.SelectedDifficulty] = 0f;
+        }
+
+        if (_survivalTime > _config.HighScores[_config.SelectedDifficulty])
+        {
+            _config.HighScores[_config.SelectedDifficulty] = _survivalTime;
             _config.Save();
-            Plugin.Log.Info($"[GameEngine] New High Score: {_config.HighScore}");
+            Plugin.Log.Info($"[GameEngine] New High Score: {_survivalTime}");
         }
 
         SetStatus(GameStatus.GameOver);

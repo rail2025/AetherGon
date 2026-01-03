@@ -81,9 +81,9 @@ public class ConfigWindow : Window, IDisposable
 
         ImGui.Separator();
 
-        if (ImGui.Button("Reset High Score"))
+        if (ImGui.Button("Reset High Scores"))
         {
-            this.configuration.HighScore = 0;
+            this.configuration.HighScores.Clear();
             this.configuration.Save();
         }
     }
