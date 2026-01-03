@@ -36,6 +36,8 @@ public class RenderService : IDisposable
     private float _strobeTimer = 0f;
     private bool _isStrobing = false;
 
+    private GameStatus _currentStatus = GameStatus.Menu;
+
     // Color Palettes (BG, Main, Player)
     private readonly List<Palette> _palettes = new()
     {
@@ -62,6 +64,7 @@ public class RenderService : IDisposable
         _lastWalls = new List<Wall>(evt.Walls);
         _worldRotation = evt.WorldRotation;
         _timeAlive = evt.TimeAlive;
+        _currentStatus = evt.Status;
         _hasData = true;
     }
 
@@ -89,6 +92,11 @@ public class RenderService : IDisposable
         var textSize = ImGui.CalcTextSize(controlsText);
         ImGui.SetCursorPos(new Vector2((windowSize.X - textSize.X) * 0.5f, windowSize.Y - textSize.Y - (20f * scale)));
         ImGui.TextColored(new Vector4(1, 1, 1, 0.5f), controlsText);
+
+        if (_currentStatus == GameStatus.Menu || _currentStatus == GameStatus.GameOver)
+        {
+            DrawDifficultySelect(windowSize, scale);
+        }
 
         // UI: Timer & High Score (Top Right)
         string timeStr = $"{_timeAlive:0.00}";
@@ -131,6 +139,35 @@ public class RenderService : IDisposable
         
     }
 
+    private void DrawDifficultySelect(Vector2 windowSize, float scale)
+    {
+        ImGui.SetCursorPos(new Vector2(20 * scale, windowSize.Y - (100 * scale)));
+
+        ImGui.TextColored(new Vector4(1, 1, 0, 1), "DIFFICULTY:");
+
+        // Helper to draw a selectable button
+        void DrawDiffButton(string label, Difficulty diff)
+        {
+            bool isSelected = _config.SelectedDifficulty == diff;
+            if (isSelected)
+            {
+                ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.2f, 0.8f, 0.2f, 1f));
+            }
+
+            if (ImGui.Button(label, new Vector2(80 * scale, 30 * scale)))
+            {
+                _config.SelectedDifficulty = diff;
+                _config.Save();
+            }
+
+            if (isSelected) ImGui.PopStyleColor();
+            ImGui.SameLine();
+        }
+
+        DrawDiffButton("EASY", Difficulty.Easy);
+        DrawDiffButton("WARRIOR OF LIGHT", Difficulty.Hard);
+        DrawDiffButton("AETHERGON", Difficulty.Insanity);
+    }
     private void UpdateVisualEffects(float dt)
     {
         _themeTimer += dt;

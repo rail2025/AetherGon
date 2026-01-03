@@ -48,6 +48,7 @@ public class InputPollingService : IDisposable
         _frameCount++;
 
         // CONFIRM (Start/Restart)
+        bool mouseClicked = ImGui.IsMouseClicked(ImGuiMouseButton.Left) && !ImGui.GetIO().WantCaptureMouse;
         if (IsJustPressed(VirtualKey.SPACE) || IsJustPressed(VirtualKey.RETURN) || ImGui.IsMouseClicked(ImGuiMouseButton.Left))
         {
             _eventBus.Publish(new GameActionCommand("Confirm"));

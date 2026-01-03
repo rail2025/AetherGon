@@ -5,6 +5,13 @@ using System.Collections.Generic;
 
 namespace AetherGon;
 
+public enum Difficulty
+{
+    Easy,
+    Hard,
+    Insanity
+}
+
 [Serializable]
 public class Configuration : IPluginConfiguration
 {
@@ -13,6 +20,7 @@ public class Configuration : IPluginConfiguration
     // --- New Architecture Settings ---
     public bool ShowGuideLines { get; set; } = true;
     public float HighScore { get; set; } = 0f;
+    public Difficulty SelectedDifficulty { get; set; } = Difficulty.Hard;
 
     public bool IsSfxMuted { get; set; } = false;
     public bool IsBgmMuted { get; set; } = false;

@@ -67,15 +67,29 @@ public class GameEngine : IDisposable
                 Plugin.Log.Info($"[GameEngine] Stage {_stageCount} Started!");
             }
 
-            // 0.8f is the STARTING speed. 
-            // Increase this (e.g. to 1.0f) to make the game start faster.
-            // Decrease this (e.g. to 0.5f) to make it start slower.
-            float baseSpeed = 0.5f + ((_stageCount - 1) * 0.1f);
+            // CHANGE: Difficulty Math
+            float baseVal = 0.5f;
+            float rampVal = 0.7f;
 
-            // 2. "1.2f" is how much FASTER it gets over 60 seconds.
-            // Lower this (e.g. to 0.5f) to reduce the acceleration.
-            float ramp = (_stageTime / 60f) * 1.2f;
-            _gameSpeed = baseSpeed + ramp;
+            switch (_config.SelectedDifficulty)
+            {
+                case Difficulty.Easy:
+                    baseVal = 0.4f;
+                    rampVal = 0.4f;
+                    break;
+                case Difficulty.Hard:
+                    baseVal = 0.5f;
+                    rampVal = 0.7f;
+                    break;
+                case Difficulty.Insanity:
+                    baseVal = 0.8f;
+                    rampVal = 1.2f;
+                    break;
+            }
+
+            float speedStart = baseVal + ((_stageCount - 1) * 0.05f);
+            float ramp = (_stageTime / 60f) * rampVal;
+            _gameSpeed = speedStart + ramp;
 
             if (_startSpawnOffset > 0f)
             {
@@ -95,7 +109,7 @@ public class GameEngine : IDisposable
 
         UpdateWallPhysics(dt);
 
-        _eventBus.Publish(new WorldUpdatedEvent(_player, _walls, _worldRotation, _survivalTime));
+        _eventBus.Publish(new WorldUpdatedEvent(_player, _walls, _worldRotation, _survivalTime, _status));
         _currentInput = MoveDirection.None;
     }
 
