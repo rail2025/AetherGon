@@ -36,27 +36,27 @@ public class TitleWindow : Window, IDisposable
     {
         // --- Background Image (Placeholder) ---
         // Uncomment when you have an icon/bg loaded in TextureManager
-        /*
-        var bgTexture = _textureManager.GetIcon("icon.png");
+        
+        var bgTexture = _textureManager.GetIcon("Images.aethergontitle.png");
         if (bgTexture != null)
         {
             var windowPos = ImGui.GetWindowPos();
             var windowSize = ImGui.GetWindowSize();
             ImGui.GetWindowDrawList().AddImage(bgTexture.Handle, windowPos, windowPos + windowSize);
         }
-        */
+        
 
         var windowWidth = ImGui.GetWindowWidth();
         var windowHeight = ImGui.GetWindowHeight();
 
         // --- Title Text ---
         // Center the title
-        string titleText = "AETHERGON";
+        /*string titleText = "AETHERGON";
         ImGui.SetWindowFontScale(2.0f);
         var titleSize = ImGui.CalcTextSize(titleText);
         Vector2 titlePos = new Vector2((windowWidth - titleSize.X) * 0.5f, windowHeight * 0.2f);
         DrawTextWithOutline(titleText, ImGui.GetWindowPos() + titlePos, 0xFFFFFFFF, 0xFF000000);
-        ImGui.SetWindowFontScale(1.0f);
+        ImGui.SetWindowFontScale(1.0f);*/
 
         // --- Buttons ---
         float buttonWidth = 200f;

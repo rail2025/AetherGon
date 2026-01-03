@@ -88,7 +88,7 @@ public class RenderService : IDisposable
         // Background (Fill Window)
         drawList.AddRectFilled(windowPos, windowPos + windowSize, colors.Bg);
 
-        string controlsText = "Controls: A/D or \u2190 / \u2192"; // Left/Right Arrows
+        string controlsText = "Controls: A/D or \u2190 / \u2192 , Press SPACE or Enter to start"; // Left/Right Arrows
         var textSize = ImGui.CalcTextSize(controlsText);
         ImGui.SetCursorPos(new Vector2((windowSize.X - textSize.X) * 0.5f, windowSize.Y - textSize.Y - (20f * scale)));
         ImGui.TextColored(new Vector4(1, 1, 1, 0.5f), controlsText);

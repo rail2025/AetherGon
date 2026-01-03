@@ -37,6 +37,7 @@
     <EmbeddedResource Include="Music\bonus_4.mp3" />
     <EmbeddedResource Include="Music\bonus_5.mp3" />
     <EmbeddedResource Include="icon.png" />
+    <EmbeddedResource Include="Images\aethergontitle.png" />
     <Content Include="repo.json" />
     <EmbeddedResource Include="Sfx\bomb.mp3" />
     <EmbeddedResource Include="Sfx\clearstage.mp3" />

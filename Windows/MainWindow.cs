@@ -58,6 +58,10 @@ public class MainWindow : Window, IDisposable
         ImGui.SameLine();
         ImGui.TextColored(new Vector4(1, 1, 1, 0.5f), "BGM");
 
+        if (ImGui.IsMouseClicked(ImGuiMouseButton.Left) && ImGui.IsAnyItemHovered())
+            ImGui.GetIO().WantCaptureMouse = true;
+
+
         // Debug Overlay
         /* 
         ImGui.SetCursorPos(new Vector2(10, 30));
