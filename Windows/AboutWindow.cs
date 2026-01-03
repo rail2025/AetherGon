@@ -36,7 +36,7 @@ public class AboutWindow : Window, IDisposable
     {
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.0.0";
         ImGui.Text($"Version: {version}");
-        ImGui.Text("Release Date: 6/16/2025");
+        ImGui.Text("Release Date: 1/1/2026");
         ImGui.Separator();
 
         ImGui.Text("Created by: rail");

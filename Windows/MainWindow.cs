@@ -3,7 +3,7 @@ using AetherGon.Foundation;
 using AetherGon.Systems;
 using AetherGon.UI;
 using Dalamud.Bindings.ImGui;
-using Dalamud.Game.ClientState.Keys; // NEW
+using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
 using System;
@@ -43,6 +43,20 @@ public class MainWindow : Window, IDisposable
     public override void Draw()
     {
         _renderService.Draw();
+        // Volume Slider Overlay
+        var scale = ImGuiHelpers.GlobalScale;
+        ImGui.SetCursorPos(new Vector2(20 * scale, 20 * scale));
+        ImGui.PushItemWidth(80 * scale);
+        var vol = _plugin.Configuration.MusicVolume;
+        if (ImGui.SliderFloat("##MainVol", ref vol, 0.0f, 1.0f, ""))
+        {
+            _plugin.Configuration.MusicVolume = vol;
+            _plugin.AudioManager.SetMusicVolume(vol);
+            _plugin.Configuration.Save();
+        }
+        ImGui.PopItemWidth();
+        ImGui.SameLine();
+        ImGui.TextColored(new Vector4(1, 1, 1, 0.5f), "BGM");
 
         // Debug Overlay
         /* 

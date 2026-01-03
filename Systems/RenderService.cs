@@ -101,7 +101,16 @@ public class RenderService : IDisposable
         // UI: Timer & High Score (Top Right)
         string timeStr = $"{_timeAlive:0.00}";
         float currentBest = _config.HighScores.TryGetValue(_config.SelectedDifficulty, out var s) ? s : 0f;
-        string bestStr = $"BEST: {currentBest:0.00}";
+
+        // Match the high score label to the button text
+        string diffLabel = _config.SelectedDifficulty switch
+        {
+            Difficulty.Easy => "EASY",
+            Difficulty.Hard => "WARRIOR OF LIGHT",
+            Difficulty.Insanity => "AETHERGON",
+            _ => "UNKNOWN"
+        };
+        string bestStr = $"BEST ({diffLabel}): {currentBest:0.00}";
 
         // Calculate Text Sizes
         var timeSize = ImGui.CalcTextSize(timeStr);
@@ -142,44 +151,23 @@ public class RenderService : IDisposable
 
     private void DrawDifficultySelect(ImDrawListPtr drawList, Vector2 windowSize, float scale)
     {
-        // Position for the "DIFFICULTY:" label
         Vector2 startPos = new Vector2(20 * scale, windowSize.Y - (100 * scale));
 
-        // Draw "DIFFICULTY:" label with outline
         DrawOutlinedText(drawList, ImGui.GetWindowPos() + startPos, "DIFFICULTY:", scale);
-
-        // Move cursor for buttons
         ImGui.SetCursorPos(new Vector2(startPos.X, startPos.Y + (25 * scale)));
 
-        // Helper to draw a custom button
         void DrawDiffButton(string label, Difficulty diff)
         {
-            Vector2 btnSize = new Vector2(120 * scale, 22 * scale); // Wider to fit text
-            Vector2 cursorScreen = ImGui.GetCursorScreenPos();
+            bool isSelected = _config.SelectedDifficulty == diff;
+            var color = isSelected ? new Vector4(0.2f, 0.8f, 0.2f, 1f) : new Vector4(0.5f, 0.5f, 0.5f, 0.5f);
 
-            // Invisible Button for Interaction
-            ImGui.PushID(label);
-            if (ImGui.InvisibleButton(label, btnSize))
+            ImGui.PushStyleColor(ImGuiCol.Button, color);
+            if (ImGui.Button(label, new Vector2(120 * scale, 22 * scale)))
             {
                 _config.SelectedDifficulty = diff;
                 _config.Save();
             }
-            ImGui.PopID();
-
-            bool isSelected = _config.SelectedDifficulty == diff;
-
-            // Background rect (Green if selected, faint grey if not)
-            uint bgColor = isSelected ? 0xFF33CC33 : 0x44888888;
-            drawList.AddRectFilled(cursorScreen, cursorScreen + btnSize, bgColor, 4f);
-
-            // Text Centering
-            Vector2 textSize = ImGui.CalcTextSize(label);
-            Vector2 textPos = cursorScreen + (btnSize - textSize) * 0.5f;
-
-            // Draw Text with Outline
-            DrawOutlinedText(drawList, textPos, label, 1.0f);
-
-            // Spacing for next button
+            ImGui.PopStyleColor();
             ImGui.SameLine();
         }
 
@@ -187,6 +175,7 @@ public class RenderService : IDisposable
         DrawDiffButton("WARRIOR OF LIGHT", Difficulty.Hard);
         DrawDiffButton("AETHERGON", Difficulty.Insanity);
     }
+
     private void DrawOutlinedText(ImDrawListPtr drawList, Vector2 pos, string text, float scale)
     {
         uint black = 0xFF000000;

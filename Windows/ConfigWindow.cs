@@ -41,6 +41,16 @@ public class ConfigWindow : Window, IDisposable
             this.audioManager.UpdateBgmState();
         }
 
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(100);
+        var musicVolume = this.configuration.MusicVolume;
+        if (ImGui.SliderFloat("##MusicVol", ref musicVolume, 0.0f, 1.0f, "Vol %.2f"))
+        {
+            this.configuration.MusicVolume = musicVolume;
+            this.audioManager.SetMusicVolume(musicVolume);
+            this.configuration.Save();
+        }
+
         var isSfxMuted = this.configuration.IsSfxMuted;
         if (ImGui.Checkbox("Mute Sound Effects", ref isSfxMuted))
         {

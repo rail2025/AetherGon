@@ -82,6 +82,12 @@ public class TitleWindow : Window, IDisposable
             _plugin.ToggleConfigUI();
         }
 
+        ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) * 0.5f, startY + (buttonHeight + 10) * 2));
+        if (DrawButtonWithOutline("About", "ABOUT", buttonSize))
+        {
+            _plugin.ToggleAboutUI();
+        }
+
         // --- Audio Controls (Bottom) ---
         float bottomY = windowHeight - 50f;
         ImGui.SetCursorPos(new Vector2(20, bottomY));
@@ -101,6 +107,17 @@ public class TitleWindow : Window, IDisposable
         if (DrawCheckboxWithOutline("MuteSFX", "Mute SFX", ref sfxMuted))
         {
             _plugin.Configuration.IsSfxMuted = sfxMuted;
+            _plugin.Configuration.Save();
+        }
+
+        ImGui.SameLine();
+        ImGui.SetCursorPosX(280);
+        ImGui.SetNextItemWidth(80);
+        var musicVolume = _plugin.Configuration.MusicVolume;
+        if (ImGui.SliderFloat("##TitleVol", ref musicVolume, 0.0f, 1.0f, ""))
+        {
+            _plugin.Configuration.MusicVolume = musicVolume;
+            _plugin.AudioManager.SetMusicVolume(musicVolume);
             _plugin.Configuration.Save();
         }
     }

@@ -35,6 +35,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private readonly MainWindow _mainWindow;
     private readonly ConfigWindow _configWindow;
+    private readonly AboutWindow _aboutWindow;
     public readonly TitleWindow TitleWindow;
 
     public Plugin()
@@ -68,10 +69,12 @@ public sealed class Plugin : IDalamudPlugin
 
         _mainWindow = new MainWindow(this);
         _configWindow = new ConfigWindow(this, AudioManager);
+        _aboutWindow = new AboutWindow();
         TitleWindow = new TitleWindow(this);
 
         WindowSystem.AddWindow(_mainWindow);
         WindowSystem.AddWindow(_configWindow);
+        WindowSystem.AddWindow(_aboutWindow);
         WindowSystem.AddWindow(TitleWindow);
 
         CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
@@ -96,6 +99,7 @@ public sealed class Plugin : IDalamudPlugin
 
         _mainWindow.Dispose();
         _configWindow.Dispose();
+        _aboutWindow.Dispose();
         TitleWindow.Dispose();
         AudioManager.Dispose();
         Services.Dispose();
@@ -106,4 +110,5 @@ public sealed class Plugin : IDalamudPlugin
     public void ToggleTitleUI() => TitleWindow.Toggle();
     public void ToggleMainUI() => _mainWindow.IsOpen = !_mainWindow.IsOpen;
     public void ToggleConfigUI() => _configWindow.Toggle();
+    public void ToggleAboutUI() => _aboutWindow.Toggle();
 }
