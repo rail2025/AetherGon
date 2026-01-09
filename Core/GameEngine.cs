@@ -19,6 +19,8 @@ public class GameEngine : IDisposable
     private List<Wall> _walls = new();
 
     private float _worldRotation = 0f;
+    private float _rotationDirection = 1.0f;
+    private int _beatsSinceFlip = 0;
     private float _gameSpeed = 1.0f;
     private float _survivalTime = 0f;
 
@@ -29,12 +31,14 @@ public class GameEngine : IDisposable
     private int _patternStep = 0;
     private int _currentPattern = 0;
 
-    // NEW: Track mechanics to insert breathers
+    //Track mechanics to insert breathers
     private int _mechanicsCount = 0;
 
     private readonly Random _random = new();
     private MoveDirection _currentInput = MoveDirection.None;
     private float _startSpawnOffset = 0f;
+
+    private readonly BeatSequencer _beatSequencer;
 
     public GameEngine(EventBus eventBus, IFramework framework, Configuration config)
     {
@@ -42,8 +46,11 @@ public class GameEngine : IDisposable
         _framework = framework;
         _config = config;
 
+        _beatSequencer = new BeatSequencer(_eventBus);
+
         _eventBus.Subscribe<MovementCommand>(OnMovement);
         _eventBus.Subscribe<GameActionCommand>(OnAction);
+        _eventBus.Subscribe<BeatPulseEvent>(OnBeat);
         _framework.Update += OnUpdate;
 
         _walls.Add(new Wall { Angle = 0, Width = MathF.PI / 3, Distance = 400f });
@@ -53,11 +60,12 @@ public class GameEngine : IDisposable
     {
         var dt = (float)framework.UpdateDelta.TotalSeconds;
 
-        _worldRotation += 0.5f * dt;
+        _worldRotation += 0.5f * _rotationDirection * dt;
 
         if (_status == GameStatus.Playing)
         {
             _survivalTime += dt;
+            _beatSequencer.Update(_survivalTime);
             _stageTime += dt;
 
             if (_stageTime > 60f)
@@ -112,7 +120,15 @@ public class GameEngine : IDisposable
         _eventBus.Publish(new WorldUpdatedEvent(_player, _walls, _worldRotation, _survivalTime, _status));
         _currentInput = MoveDirection.None;
     }
-
+    private void OnBeat(BeatPulseEvent evt)
+    {
+        _beatsSinceFlip++;
+        if (_beatsSinceFlip >= 4 && _random.NextDouble() > 0.7)
+        {
+            _rotationDirection *= -1;
+            _beatsSinceFlip = 0;
+        }
+    }
     private void UpdateSpawner(float dt)
     {
         _spawnTimer -= dt;
@@ -302,6 +318,7 @@ public class GameEngine : IDisposable
         _walls.Clear();
         _player.Angle = 0;
         _survivalTime = 0f;
+        _beatSequencer.Reset();
         _stageTime = 0f;
         _stageCount = 1;
         _spawnTimer = 0f;
@@ -324,5 +341,6 @@ public class GameEngine : IDisposable
         _framework.Update -= OnUpdate;
         _eventBus.Unsubscribe<MovementCommand>(OnMovement);
         _eventBus.Unsubscribe<GameActionCommand>(OnAction);
+        _eventBus.Unsubscribe<BeatPulseEvent>(OnBeat);
     }
 }

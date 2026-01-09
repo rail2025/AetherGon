@@ -50,12 +50,15 @@ public class RenderService : IDisposable
 
     private record Palette(Vector4 Bg, Vector4 Fg, Vector4 Player);
 
+    private float _beatPulse = 0f;
+
     public RenderService(EventBus eventBus, TextureManager textureManager, Configuration config)
     {
         _eventBus = eventBus;
         _textureManager = textureManager;
         _config = config;
         _eventBus.Subscribe<WorldUpdatedEvent>(OnWorldUpdate);
+        _eventBus.Subscribe<BeatPulseEvent>(OnBeat);
     }
 
     private void OnWorldUpdate(WorldUpdatedEvent evt)
@@ -77,6 +80,17 @@ public class RenderService : IDisposable
         var windowSize = ImGui.GetWindowSize();
         var center = windowPos + windowSize * 0.5f;
         var scale = ImGuiHelpers.GlobalScale;
+
+        
+
+        // Apply Zoom based on beat pulse
+        // Kick scale up by 10% when beat hits
+        float beatScale = 1.0f + (_beatPulse * 0.05f);
+        scale *= beatScale;
+
+        // Calculate a local pulse just for specific objects
+        float hexPulse = 1.0f + (_beatPulse * 0.15f); // Center hexagon expands by 15%
+
         var dt = ImGui.GetIO().DeltaTime;
 
         // --- UPDATE VISUALS ---
@@ -133,8 +147,12 @@ public class RenderService : IDisposable
 
         // Center Hexagon
         float visualRotation = _worldRotation + (MathF.PI / 6f);
-        DrawPoly(drawList, center, HEXAGON_RADIUS * scale, 6, colors.Bg, visualRotation); // Center matches BG (void)
-        DrawPolyStroke(drawList, center, HEXAGON_RADIUS * scale, 6, colors.Fg, visualRotation, 3f);
+        // Pulse the Radius
+        DrawPoly(drawList, center, (HEXAGON_RADIUS * scale) * hexPulse, 6, colors.Bg, visualRotation);
+        /* DrawPolyStroke(drawList, center, HEXAGON_RADIUS * scale, 6, colors.Fg, visualRotation, 3f); */
+        
+        // Pulse the Stroke Thickness and Radius
+        DrawPolyStroke(drawList, center, (HEXAGON_RADIUS * scale) * hexPulse, 6, colors.Fg, visualRotation, 3f + (2f * _beatPulse));
 
         // Walls
         foreach (var wall in _lastWalls)
@@ -201,10 +219,19 @@ public class RenderService : IDisposable
         // Draw Center in White
         drawList.AddText(pos, white, text);
     }
+
+    private void OnBeat(BeatPulseEvent evt)
+    {
+        _beatPulse = 1.0f; // Set to max intensity
+    }
     private void UpdateVisualEffects(float dt)
     {
         _themeTimer += dt;
         _strobeTimer += dt;
+
+        // Decay the pulse
+        _beatPulse -= dt * 4.0f; // Speed of fade out
+        if (_beatPulse < 0) _beatPulse = 0;
 
         // Swap Theme every 5 seconds
         if (_themeTimer > 5.0f)
@@ -230,9 +257,16 @@ public class RenderService : IDisposable
         Vector4 finalFg = p.Fg;
 
         // Pulse Effect (BPM Sim) - Oscillate brightness slightly
-        float pulse = (MathF.Sin(_timeAlive * 8f) + 1f) * 0.5f; // 0 to 1
+        //float pulse = (MathF.Sin(_timeAlive * 8f) + 1f) * 0.5f; // 0 to 1
+
+        // Flash BG on beat
+        //finalBg += new Vector4(0.2f, 0.2f, 0.2f, 0) * _beatPulse;
+
+        // MODIFIED: Subtle glow on the neon lines only (reduced from 0.3f to 0.15f)
+        finalFg += new Vector4(0.45f, 0.45f, 0.45f, 0) * _beatPulse;
+
         // Modulate BG intensity
-        finalBg += new Vector4(0.05f, 0.05f, 0.05f, 0) * pulse;
+        //finalBg += new Vector4(0.05f, 0.05f, 0.05f, 0) * pulse;
 
         // Strobe Effect (Invert colors rapidly)
         if (_isStrobing)
@@ -341,5 +375,6 @@ public class RenderService : IDisposable
     public void Dispose()
     {
         _eventBus.Unsubscribe<WorldUpdatedEvent>(OnWorldUpdate);
+        _eventBus.Unsubscribe<BeatPulseEvent>(OnBeat);
     }
 }

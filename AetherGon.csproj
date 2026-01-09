@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Dalamud.NET.Sdk/14.0.1">
   <PropertyGroup>
-    <Version>1.0.0.0</Version>
+    <Version>1.1.0.0</Version>
     <TargetFramework>net10.0</TargetFramework>
     <Description>A super hexagon clone. Open with /agon.</Description>
-    <PackageProjectUrl>https://github.com/goatcorp/SamplePlugin</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/rail2025/Aethergon</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -38,6 +38,9 @@
     <EmbeddedResource Include="Music\bonus_5.mp3" />
     <EmbeddedResource Include="icon.png" />
     <EmbeddedResource Include="Images\aethergontitle.png" />
+    <EmbeddedResource Include="bgmaudacitylabelbeats.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="repo.json" />
     <EmbeddedResource Include="Sfx\bomb.mp3" />
     <EmbeddedResource Include="Sfx\clearstage.mp3" />
@@ -55,7 +58,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="DalamudPackager" Version="14.0.1" />
-    <PackageReference Update="DotNet.ReproducibleBuilds" Version="1.2.39" />
+       <PackageReference Update="DotNet.ReproducibleBuilds" Version="1.2.39" />
   </ItemGroup>
 </Project>

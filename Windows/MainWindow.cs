@@ -22,6 +22,8 @@ public class MainWindow : Window, IDisposable
     public static Vector2 ScaledWindowSize => BaseWindowSize * ImGuiHelpers.GlobalScale;
     public const float HudAreaHeight = 110f;
 
+    private bool _switchingToTitle = false;
+
     public MainWindow(Plugin plugin) : base("AetherGon")
     {
         _plugin = plugin;
@@ -37,14 +39,26 @@ public class MainWindow : Window, IDisposable
 
         this.Flags = ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse;
     }
+    public override void OnClose()
+    {
+        // Only stop music if we are NOT switching to title
+        if (!_switchingToTitle)
+        {
+            _plugin.AudioManager.EndPlaylist();
+        }
 
+        // Reset flag for next time
+        _switchingToTitle = false;
+    }
     public void Dispose() { }
 
     public override void Draw()
     {
         _renderService.Draw(() => {
+            _switchingToTitle = true; // Tell OnClose to ignore the stop command
             this.IsOpen = false;
             _plugin.TitleWindow.IsOpen = true;
+            _plugin.AudioManager.StartBgmPlaylist();
         });
 
         // Volume Slider Overlay
