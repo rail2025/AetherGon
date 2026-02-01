@@ -17,10 +17,8 @@ public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 0;
 
-    // --- New Architecture Settings ---
     public bool ShowGuideLines { get; set; } = true;
 
-    // Changed: Store scores per difficulty
     public Dictionary<Difficulty, float> HighScores { get; set; } = new();
 
     public Difficulty SelectedDifficulty { get; set; } = Difficulty.Hard;
@@ -36,6 +34,7 @@ public class Configuration : IPluginConfiguration
     public bool OpenInQueue { get; set; } = false;
     public bool OpenInPartyFinder { get; set; } = false;
     public bool OpenDuringCrafting { get; set; } = false;
+    public bool HasSeenFlashWarning { get; set; } = false;
 
     [NonSerialized]
     private IDalamudPluginInterface? PluginInterface;

@@ -4,17 +4,17 @@ namespace AetherGon.Core.Entities;
 
 public class Player
 {
-    public float Angle { get; set; } // In Radians (0 to 2PI)
-    public float Radius { get; set; } = 55f; // Fixed distance from center
-    public float Speed { get; set; } = 4.5f; // Radians per second
+    public float Angle { get; set; }
+    public float Radius { get; set; } = 55f;
+    public float Speed { get; set; } = 4.5f;
 }
 
 public class Wall
 {
-    public float Angle { get; set; } // Center angle of the wall
-    public float Width { get; set; } // Arc length/span in Radians
-    public float Distance { get; set; } // Current distance from center
-    public int SideCount { get; set; } = 6; // Which shape (Hexagon, etc.)
+    public float Angle { get; set; }
+    public float Width { get; set; }
+    public float Distance { get; set; }
+    public int SideCount { get; set; } = 6;
 }
 
 public enum GameStatus

@@ -27,10 +27,7 @@ public class TextureManager : IDisposable
     }
 
     private void LoadTextures()
-    {
-        // Placeholder for loading logic
-        // Use _log.Info("Loading textures..."); instead of Plugin.Log.Info
-    }
+    {    }
 
     public IDalamudTextureWrap? GetBackground(int index)
     {

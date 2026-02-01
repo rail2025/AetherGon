@@ -29,38 +29,31 @@ public class InputPollingService : IDisposable
     private bool _wasWindowOpen = false;
     private void OnFrameworkUpdate(IFramework framework)
     {
-        // Get Window State
         var window = _windowSystem.Windows.FirstOrDefault(x => x.WindowName == "AetherGon");
         bool isWindowOpen = window != null && window.IsOpen;
 
-        // Detect Transition: Open -> Closed
         if (_wasWindowOpen && !isWindowOpen)
         {
             _eventBus.Publish(new GameActionCommand("Pause"));
         }
 
-        // Update State Tracker
         _wasWindowOpen = isWindowOpen;
 
-        // Abort inputs if closed
         if (!isWindowOpen) return;
 
         _frameCount++;
 
-        // CONFIRM (Start/Restart)
         bool mouseClicked = ImGui.IsMouseClicked(ImGuiMouseButton.Left) && !ImGui.GetIO().WantCaptureMouse;
         if (IsJustPressed(VirtualKey.SPACE) || IsJustPressed(VirtualKey.RETURN) || mouseClicked)
         {
             _eventBus.Publish(new GameActionCommand("Confirm"));
         }
 
-        // PAUSE
         if (IsJustPressed(VirtualKey.ESCAPE))
         {
             _eventBus.Publish(new GameActionCommand("Pause"));
         }
 
-        // MOVEMENT (Continuous)
         if (_keyState[VirtualKey.A] || _keyState[VirtualKey.LEFT])
         {
             _eventBus.Publish(new MovementCommand(MoveDirection.Left, ImGui.GetIO().DeltaTime));

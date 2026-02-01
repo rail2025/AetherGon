@@ -36,8 +36,6 @@ public class BeatSequencer
         try
         {
             var assembly = Assembly.GetExecutingAssembly();
-            // Note: Resource name is typically "Namespace.Filename"
-            // If the file is in a folder, it is "Namespace.Folder.Filename"
             string resourceName = "AetherGon.bgmaudacitylabelbeats.txt";
 
             using var stream = assembly.GetManifestResourceStream(resourceName);
@@ -55,7 +53,6 @@ public class BeatSequencer
             }
             else
             {
-                // Debug helper: List all resources if name is wrong
                 var resources = string.Join(", ", assembly.GetManifestResourceNames());
                 Plugin.Log.Error($"[BeatSequencer] Resource '{resourceName}' not found. Available: {resources}");
             }
@@ -73,7 +70,6 @@ public class BeatSequencer
 
     public void Update(float timeAlive)
     {
-        // Trigger all beats that happened since the last check
         while (_nextBeatIndex < _beats.Count && _beats[_nextBeatIndex].StartTime <= timeAlive)
         {
             _eventBus.Publish(new BeatPulseEvent());

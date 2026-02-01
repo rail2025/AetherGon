@@ -41,13 +41,11 @@ public class MainWindow : Window, IDisposable
     }
     public override void OnClose()
     {
-        // Only stop music if we are NOT switching to title
         if (!_switchingToTitle)
         {
             _plugin.AudioManager.EndPlaylist();
         }
 
-        // Reset flag for next time
         _switchingToTitle = false;
     }
     public void Dispose() { }
@@ -55,13 +53,12 @@ public class MainWindow : Window, IDisposable
     public override void Draw()
     {
         _renderService.Draw(() => {
-            _switchingToTitle = true; // Tell OnClose to ignore the stop command
+            _switchingToTitle = true;
             this.IsOpen = false;
             _plugin.TitleWindow.IsOpen = true;
             _plugin.AudioManager.StartBgmPlaylist();
         });
 
-        // Volume Slider Overlay
         var scale = ImGuiHelpers.GlobalScale;
         ImGui.SetCursorPos(new Vector2(20 * scale, 20 * scale));
         ImGui.PushItemWidth(80 * scale);
@@ -84,7 +81,7 @@ public class MainWindow : Window, IDisposable
         /* 
         ImGui.SetCursorPos(new Vector2(10, 30));
 
-        // Read directly from Dalamud KeyState for debug
+        // Read directly from KeyState for debug
         bool spaceDown = Plugin.KeyState[VirtualKey.SPACE];
         bool leftDown = Plugin.KeyState[VirtualKey.A];
         bool rightDown = Plugin.KeyState[VirtualKey.D];

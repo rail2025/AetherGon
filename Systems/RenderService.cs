@@ -18,18 +18,15 @@ public class RenderService : IDisposable
     private readonly TextureManager _textureManager;
     private readonly Configuration _config;
 
-    // Game State Cache
     private Player _lastPlayerState = new();
     private List<Wall> _lastWalls = new();
     private float _worldRotation = 0f;
     private float _timeAlive = 0f;
     private bool _hasData = false;
 
-    // Visual Constants
     private const float HEXAGON_RADIUS = 45f;
     private const float WALL_DEPTH = 30f;
 
-    // Visual State
     private readonly Random _rng = new();
     private int _themeIndex = 0;
     private float _themeTimer = 0f;
@@ -38,7 +35,6 @@ public class RenderService : IDisposable
 
     private GameStatus _currentStatus = GameStatus.Menu;
 
-    // Color Palettes (BG, Main, Player)
     private readonly List<Palette> _palettes = new()
     {
         new(new(0.1f, 0.0f, 0.0f, 1f), new(1.0f, 0.2f, 0.2f, 1f), new(1f, 1f, 0f, 1f)), // Red/Red/Yellow
@@ -81,28 +77,20 @@ public class RenderService : IDisposable
         var center = windowPos + windowSize * 0.5f;
         var scale = ImGuiHelpers.GlobalScale;
 
-        
-
-        // Apply Zoom based on beat pulse
-        // Kick scale up by 10% when beat hits
         float beatScale = 1.0f + (_beatPulse * 0.05f);
         scale *= beatScale;
 
-        // Calculate a local pulse just for specific objects
-        float hexPulse = 1.0f + (_beatPulse * 0.15f); // Center hexagon expands by 15%
+        float hexPulse = 1.0f + (_beatPulse * 0.15f);
 
         var dt = ImGui.GetIO().DeltaTime;
 
-        // --- UPDATE VISUALS ---
         UpdateVisualEffects(dt);
 
-        // Get current colors based on visual state
         var colors = CalculateCurrentColors();
 
-        // Background (Fill Window)
         drawList.AddRectFilled(windowPos, windowPos + windowSize, colors.Bg);
 
-        string controlsText = "Controls: A/D or \u2190 / \u2192 , Press SPACE or Enter to start"; // Left/Right Arrows
+        string controlsText = "Controls: A/D or \u2190 / \u2192 , Press SPACE or Enter to start";
         var textSize = ImGui.CalcTextSize(controlsText);
         ImGui.SetCursorPos(new Vector2((windowSize.X - textSize.X) * 0.5f, windowSize.Y - textSize.Y - (20f * scale)));
         
@@ -113,11 +101,9 @@ public class RenderService : IDisposable
             DrawDifficultySelect(drawList, windowSize, scale, onReturnToTitle);
         }
 
-        // UI: Timer & High Score (Top Right)
         string timeStr = $"{_timeAlive:0.00}";
         float currentBest = _config.HighScores.TryGetValue(_config.SelectedDifficulty, out var s) ? s : 0f;
 
-        // Match the high score label to the button text
         string diffLabel = _config.SelectedDifficulty switch
         {
             Difficulty.Easy => "EASY",
@@ -127,40 +113,30 @@ public class RenderService : IDisposable
         };
         string bestStr = $"BEST ({diffLabel}): {currentBest:0.00}";
 
-        // Calculate Text Sizes
         var timeSize = ImGui.CalcTextSize(timeStr);
         var bestSize = ImGui.CalcTextSize(bestStr);
         float padding = 20f * scale;
 
-        // Draw Timer (Large)
-        ImGui.SetWindowFontScale(1.5f); // Make timer bigger
+        ImGui.SetWindowFontScale(1.5f);
         ImGui.SetCursorPos(new Vector2(windowSize.X - timeSize.X * 1.5f - padding, padding));
         ImGui.TextColored(colors.Player, timeStr);
-        ImGui.SetWindowFontScale(1.0f); // Reset scale
+        ImGui.SetWindowFontScale(1.0f);
 
-        // Draw Best (Small, under timer)
         ImGui.SetCursorPos(new Vector2(windowSize.X - bestSize.X - padding, padding + (30f * scale)));
         ImGui.TextColored(new Vector4(1, 1, 1, 0.7f), bestStr);
 
-        // Guides
         DrawGuidelines(drawList, center, scale, colors.Fg);
 
-        // Center Hexagon
         float visualRotation = _worldRotation + (MathF.PI / 6f);
-        // Pulse the Radius
         DrawPoly(drawList, center, (HEXAGON_RADIUS * scale) * hexPulse, 6, colors.Bg, visualRotation);
-        /* DrawPolyStroke(drawList, center, HEXAGON_RADIUS * scale, 6, colors.Fg, visualRotation, 3f); */
         
-        // Pulse the Stroke Thickness and Radius
         DrawPolyStroke(drawList, center, (HEXAGON_RADIUS * scale) * hexPulse, 6, colors.Fg, visualRotation, 3f + (2f * _beatPulse));
 
-        // Walls
         foreach (var wall in _lastWalls)
         {
             DrawWall(drawList, center, wall, scale, colors.Fg);
         }
 
-        // Player
         DrawPlayer(drawList, center, scale, colors.Player);
 
         DrawGuidelines(drawList, center, scale, colors.Fg);
@@ -208,42 +184,36 @@ public class RenderService : IDisposable
     {
         uint black = 0xFF000000;
         uint white = 0xFFFFFFFF;
-        float offset = 1f * scale; // 1px offset scaled
+        float offset = 1f * scale;
 
-        // Draw 4 offsets in Black
-        drawList.AddText(pos + new Vector2(-offset, -offset), black, text); // NW
-        drawList.AddText(pos + new Vector2(offset, -offset), black, text); // NE
-        drawList.AddText(pos + new Vector2(-offset, offset), black, text); // SW
-        drawList.AddText(pos + new Vector2(offset, offset), black, text); // SE
+        drawList.AddText(pos + new Vector2(-offset, -offset), black, text);
+        drawList.AddText(pos + new Vector2(offset, -offset), black, text);
+        drawList.AddText(pos + new Vector2(-offset, offset), black, text);
+        drawList.AddText(pos + new Vector2(offset, offset), black, text);
 
-        // Draw Center in White
         drawList.AddText(pos, white, text);
     }
 
     private void OnBeat(BeatPulseEvent evt)
     {
-        _beatPulse = 1.0f; // Set to max intensity
+        _beatPulse = 1.0f;
     }
     private void UpdateVisualEffects(float dt)
     {
         _themeTimer += dt;
         _strobeTimer += dt;
 
-        // Decay the pulse
-        _beatPulse -= dt * 4.0f; // Speed of fade out
+        _beatPulse -= dt * 4.0f;
         if (_beatPulse < 0) _beatPulse = 0;
 
-        // Swap Theme every 5 seconds
         if (_themeTimer > 5.0f)
         {
             _themeTimer = 0f;
             _themeIndex = (_themeIndex + 1) % _palettes.Count;
 
-            // Chance to trigger hyper strobe mode
             if (_rng.NextDouble() > 0.7) _isStrobing = true;
         }
 
-        // Stop strobing after 1.5 seconds
         if (_isStrobing && _themeTimer > 1.5f)
         {
             _isStrobing = false;
@@ -256,25 +226,12 @@ public class RenderService : IDisposable
         Vector4 finalBg = p.Bg;
         Vector4 finalFg = p.Fg;
 
-        // Pulse Effect (BPM Sim) - Oscillate brightness slightly
-        //float pulse = (MathF.Sin(_timeAlive * 8f) + 1f) * 0.5f; // 0 to 1
-
-        // Flash BG on beat
-        //finalBg += new Vector4(0.2f, 0.2f, 0.2f, 0) * _beatPulse;
-
-        // MODIFIED: Subtle glow on the neon lines only (reduced from 0.3f to 0.15f)
         finalFg += new Vector4(0.45f, 0.45f, 0.45f, 0) * _beatPulse;
 
-        // Modulate BG intensity
-        //finalBg += new Vector4(0.05f, 0.05f, 0.05f, 0) * pulse;
-
-        // Strobe Effect (Invert colors rapidly)
         if (_isStrobing)
         {
-            // Rapid flash (every 0.1s)
             if ((_strobeTimer % 0.25f) > 0.175f)
             {
-                // Invert Logic
                 var temp = finalBg;
                 finalBg = finalFg;
                 finalFg = temp;
@@ -318,7 +275,6 @@ public class RenderService : IDisposable
 
     private void DrawGuidelines(ImDrawListPtr drawList, Vector2 center, float scale, uint color)
     {
-        // Fade out guides (use alpha from color but reduced)
         uint guideColor = (color & 0x00FFFFFF) | 0x44000000;
 
         for (int i = 0; i < 6; i++)

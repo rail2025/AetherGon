@@ -15,7 +15,6 @@ public class AudioReactor : IDisposable
         _eventBus = eventBus;
         _audioManager = audioManager;
 
-        // Subscribe to Game Events
         _eventBus.Subscribe<PlayerCrashedEvent>(OnCrash);
         _eventBus.Subscribe<GameStateChangedEvent>(OnStateChange);
         _eventBus.Subscribe<GameActionCommand>(OnAction);
@@ -23,13 +22,13 @@ public class AudioReactor : IDisposable
 
     private void OnCrash(PlayerCrashedEvent evt)
     {
-        _audioManager.PlaySfx("Sfx.bomb.mp3"); // Ensure this file exists or use "bomb.mp3"
+        _audioManager.PlaySfx("Sfx.bomb.mp3");
     }
 
     private void OnAction(GameActionCommand cmd)
     {
         if (cmd.ActionName == "Confirm")
-            _audioManager.PlaySfx("Sfx.shot.wav"); // Use as a "Select" sound
+            _audioManager.PlaySfx("Sfx.pop.wav");
     }
 
     private void OnStateChange(GameStateChangedEvent evt)

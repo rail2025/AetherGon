@@ -75,7 +75,6 @@ public class GameEngine : IDisposable
                 Plugin.Log.Info($"[GameEngine] Stage {_stageCount} Started!");
             }
 
-            // CHANGE: Difficulty Math
             float baseVal = 0.5f;
             float rampVal = 0.7f;
 
@@ -140,20 +139,17 @@ public class GameEngine : IDisposable
 
     private void SpawnNextPattern()
     {
-        // Start New Pattern
         if (_patternStep <= 0)
         {
             _currentPattern = _random.Next(0, 6);
             _patternStep = _random.Next(6, 14);
-            _mechanicsCount++; // Increment counter
+            _mechanicsCount++;
         }
 
         float speedMult = _status == GameStatus.Playing ? 1.0f : 2.5f;
         float baseDelay = 0.8f / (_gameSpeed * 0.8f);
-
         float distance = 1800f - _startSpawnOffset;
 
-        // Spawn Logic (Intra-Pattern Timing)
         switch (_currentPattern)
         {
             case 0: // Random Lanes
@@ -167,7 +163,7 @@ public class GameEngine : IDisposable
                 _spawnTimer = baseDelay * 0.15f;
                 break;
 
-            case 2: // The "C" (Barrage)
+            case 2: // The "C"
                 int gap = _random.Next(0, 6);
                 for (int i = 0; i < 6; i++)
                 {
@@ -209,18 +205,14 @@ public class GameEngine : IDisposable
 
         _patternStep--;
 
-        // Inter-Pattern Logic (The "Gap" Control)
-        // If the pattern just finished...
         if (_patternStep <= 0)
         {
             if (_mechanicsCount % 3 == 0)
             {
-                // BREATHER: Long pause every 3 mechanics
                 _spawnTimer = baseDelay * 4.0f;
             }
             else
             {
-                // NO GAP: Seamless transition to next mechanic
                 _spawnTimer = baseDelay * 0.5f;
             }
         }
@@ -244,7 +236,7 @@ public class GameEngine : IDisposable
         for (int i = _walls.Count - 1; i >= 0; i--)
         {
             _walls[i].Distance -= 250f * _gameSpeed * dt;
-            if (_walls[i].Distance + 30f < 45f) // Matches new Hexagon Radius
+            if (_walls[i].Distance + 30f < 45f)
             {
                 _walls.RemoveAt(i);
             }
@@ -323,7 +315,7 @@ public class GameEngine : IDisposable
         _stageCount = 1;
         _spawnTimer = 0f;
         _patternStep = 0;
-        _mechanicsCount = 0; // Reset counter
+        _mechanicsCount = 0;
 
         _startSpawnOffset = 1300f;
 

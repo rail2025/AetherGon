@@ -10,26 +10,32 @@ public class TitleWindow : Window, IDisposable
 {
     private readonly Plugin _plugin;
     private readonly TextureManager _textureManager;
+    private bool _switchingToGame = false;
 
     public TitleWindow(Plugin plugin) : base("AetherGon Title###AetherGonTitleWindow")
     {
         _plugin = plugin;
         _textureManager = plugin.Services.Get<TextureManager>();
 
-        // Remove standard window frame for a splash screen look
         this.Flags = ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar;
 
-        // Set fixed initial size
         this.Size = new Vector2(500, 400);
         this.SizeCondition = ImGuiCond.FirstUseEver;
     }
 
     public override void OnOpen()
     {
-        // Start playing music when title opens
         _plugin.AudioManager.StartBgmPlaylist();
     }
 
+    public override void OnClose()
+    {
+        if (!_switchingToGame)
+        {
+            _plugin.AudioManager.StopBgm();
+        }
+        _switchingToGame = false;
+    }
     public void Dispose() { }
 
     public override void Draw()
@@ -46,25 +52,22 @@ public class TitleWindow : Window, IDisposable
         var windowWidth = ImGui.GetWindowWidth();
         var windowHeight = ImGui.GetWindowHeight();
 
-        // --- Buttons ---
         float buttonWidth = 200f;
         float buttonHeight = 40f;
         float startY = windowHeight * 0.5f;
         Vector2 buttonSize = new Vector2(buttonWidth, buttonHeight);
 
-        // Center Buttons
         ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) * 0.5f, startY));
 
-        // Start Game
         if (DrawButtonWithOutline("StartGame", "ENTER THE HEXAGON", buttonSize))
         {
+            _switchingToGame = true; 
             this.IsOpen = false;
             _plugin.ToggleMainUI();
         }
 
         ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) * 0.5f, startY + buttonHeight + 10));
 
-        // Settings
         if (DrawButtonWithOutline("Settings", "SETTINGS", buttonSize))
         {
             _plugin.ToggleConfigUI();
@@ -76,7 +79,6 @@ public class TitleWindow : Window, IDisposable
             _plugin.ToggleAboutUI();
         }
 
-        // --- Audio Controls (Bottom) ---
         float bottomY = windowHeight - 50f;
         ImGui.SetCursorPos(new Vector2(20, bottomY));
 
@@ -89,7 +91,7 @@ public class TitleWindow : Window, IDisposable
         }
 
         ImGui.SameLine();
-        ImGui.SetCursorPosX(150); // Offset second box
+        ImGui.SetCursorPosX(150);
 
         bool sfxMuted = _plugin.Configuration.IsSfxMuted;
         if (DrawCheckboxWithOutline("MuteSFX", "Mute SFX", ref sfxMuted))
@@ -110,27 +112,21 @@ public class TitleWindow : Window, IDisposable
         }
     }
 
-    // --- Helpers ---
-
     private bool DrawButtonWithOutline(string id, string text, Vector2 size)
     {
-        // Invisible button for interaction
         bool clicked = ImGui.Button($"##{id}", size);
         if (clicked) _plugin.AudioManager.PlaySfx("advance.wav");
 
-        // Manual Drawing
         var drawList = ImGui.GetWindowDrawList();
         var min = ImGui.GetItemRectMin();
         var max = ImGui.GetItemRectMax();
         drawList.AddRectFilled(min, max, 0x88000000, 5f);
 
-        // Hover Effect
         if (ImGui.IsItemHovered())
             drawList.AddRect(min, max, 0xFFFFFFFF, 5f);
         else
             drawList.AddRect(min, max, 0xFF888888, 5f);
 
-        // Centered Text
         var textSize = ImGui.CalcTextSize(text);
         var textPos = min + (size - textSize) * 0.5f;
         DrawTextWithOutline(text, textPos, 0xFFFFFFFF, 0xFF000000);
@@ -145,11 +141,9 @@ public class TitleWindow : Window, IDisposable
 
         ImGui.SameLine();
         var pos = ImGui.GetCursorScreenPos();
-        // Adjust Y to center with checkbox
         pos.Y -= 3f;
         DrawTextWithOutline(text, pos, 0xFFFFFFFF, 0xFF000000);
 
-        // Dummy to advance cursor past the manually drawn text
         ImGui.Dummy(ImGui.CalcTextSize(text));
 
         return clicked;

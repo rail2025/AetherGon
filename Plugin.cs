@@ -16,7 +16,6 @@ namespace AetherGon;
 
 public sealed class Plugin : IDalamudPlugin
 {
-    // Dalamud Services
     [PluginService] internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
     [PluginService] internal static IClientState ClientState { get; private set; } = null!;
@@ -37,6 +36,7 @@ public sealed class Plugin : IDalamudPlugin
     private readonly ConfigWindow _configWindow;
     private readonly AboutWindow _aboutWindow;
     public readonly TitleWindow TitleWindow;
+    private readonly WarningWindow _warningWindow;
 
     public Plugin()
     {
@@ -70,6 +70,8 @@ public sealed class Plugin : IDalamudPlugin
         _mainWindow = new MainWindow(this);
         _configWindow = new ConfigWindow(this, AudioManager);
         _aboutWindow = new AboutWindow();
+        _warningWindow = new WarningWindow(this);
+        WindowSystem.AddWindow(_warningWindow);
         TitleWindow = new TitleWindow(this);
 
         WindowSystem.AddWindow(_mainWindow);
@@ -103,11 +105,27 @@ public sealed class Plugin : IDalamudPlugin
         TitleWindow.Dispose();
         AudioManager.Dispose();
         Services.Dispose();
+        _warningWindow.Dispose();
     }
 
     private void OnCommand(string command, string args) => ToggleTitleUI();
     private void DrawUI() => WindowSystem.Draw();
-    public void ToggleTitleUI() => TitleWindow.Toggle();
+    public void ToggleTitleUI()
+    {
+        if (!Configuration.HasSeenFlashWarning)
+        {
+            if (_warningWindow.IsOpen)
+                _warningWindow.IsOpen = false;
+            else
+                _warningWindow.IsOpen = true;
+
+            TitleWindow.IsOpen = false;
+        }
+        else
+        {
+            TitleWindow.Toggle();
+        }
+    }
     public void ToggleMainUI() => _mainWindow.IsOpen = !_mainWindow.IsOpen;
     public void ToggleConfigUI() => _configWindow.Toggle();
     public void ToggleAboutUI() => _aboutWindow.Toggle();
