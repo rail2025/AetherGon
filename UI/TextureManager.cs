@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
 using System.Reflection;
+using System.Collections.Concurrent;
 
 namespace AetherGon.UI;
 
@@ -16,8 +17,7 @@ public class TextureManager : IDisposable
     private readonly IPluginLog _log;
 
     private readonly List<IDalamudTextureWrap> _backgroundTextures = new();
-    private readonly Dictionary<int, IDalamudTextureWrap> _bubbleTextures = new();
-    private readonly Dictionary<string, IDalamudTextureWrap?> _iconTextures = new();
+    private readonly ConcurrentDictionary<string, IDalamudTextureWrap?> _iconTextures = new();
 
     public TextureManager(ITextureProvider textureProvider, IPluginLog log)
     {
@@ -37,15 +37,11 @@ public class TextureManager : IDisposable
 
     public int GetBackgroundCount() => _backgroundTextures.Count;
 
-    public IDalamudTextureWrap? GetBubbleTexture(int type)
-    {
-        return _bubbleTextures.TryGetValue(type, out var tex) ? tex : null;
-    }
-
+   
     public IDalamudTextureWrap? GetIcon(string name)
     {
         if (_iconTextures.TryGetValue(name, out var tex)) return tex;
-        _iconTextures[name] = null;
+        if (!_iconTextures.TryAdd(name, null)) return _iconTextures.GetValueOrDefault(name);
         Task.Run(async () =>
         {
             try
@@ -77,9 +73,7 @@ _iconTextures[name] = texture;
     public void Dispose()
     {
         foreach (var tex in _backgroundTextures) tex.Dispose();
-        foreach (var tex in _bubbleTextures.Values) tex.Dispose();
         _backgroundTextures.Clear();
-        _bubbleTextures.Clear();
         foreach (var tex in _iconTextures.Values) tex?.Dispose();
         _iconTextures.Clear();
     }
