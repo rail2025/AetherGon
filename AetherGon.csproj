@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Dalamud.NET.Sdk/14.0.1">
+<Project Sdk="Dalamud.NET.Sdk/14.0.2">
   <PropertyGroup>
     <Version>1.2.0.1</Version>
-    <TargetFramework>net10.0</TargetFramework>
-      <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-      <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+      <TargetFramework>net10.0</TargetFramework>
     <Description>A super hexagon clone. Open with /agon.A/D or left right arrow</Description>
     <PackageProjectUrl>https://github.com/rail2025/Aethergon</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
       <NoWarn>CA1416</NoWarn>
+      <AcceptsFeedback>false</AcceptsFeedback>      
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,6 +31,10 @@
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="DalamudPackager" Version="14.0.2" />
   </ItemGroup>
 
 </Project>
