@@ -27,7 +27,7 @@ public sealed class Plugin : IDalamudPlugin
     private const string CommandName = "/agon";
 
     public readonly ServiceContainer Services;
-    public readonly WindowSystem WindowSystem = new("AetherGon");
+    public readonly WindowSystem WindowSystem = new("AetherHexagon");
 
     public Configuration Configuration { get; init; }
     public AudioManager AudioManager { get; init; }
@@ -81,7 +81,7 @@ public sealed class Plugin : IDalamudPlugin
 
         CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
-            HelpMessage = "Opens the AetherGon game window."
+            HelpMessage = "Opens the AetherHexagon game window."
         });
 
         PluginInterface.UiBuilder.Draw += DrawUI;
